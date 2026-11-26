@@ -4,26 +4,18 @@
 
 Alexander Nichols · Old Dominion University · [MIT License](LICENSE)
 
-Highlight a conclusion, a caveat, or a passage for review in a LaTeX
-document. Use `\hlight[color]{text}` to choose a background that follows
-the prose across line breaks, then switch to `\usepackage[off]{hlite}`
-when you need a clean PDF. The marked text stays in your source.
+Line-wrapping highlights for LaTeX drafts and reports.
 
 ## Why use hlite?
 
-**Use hlite for highlights in running prose.** It uses `highlightx` to
-draw the background and adds a short per-selection color argument, handling
-for common inline math, references, and citations, and a document-wide
-off switch. A highlighted sentence can include a figure reference and
-an inline equation without splitting the sentence into separate commands.
+Mark an entire finding, including the inline equation, figure reference,
+or citation that gives it context. Use `\hlight[color]{text}` to choose
+a color for each selection. As you revise the sentence, the background
+follows the text across line breaks.
 
-**Use highlightx directly for more control over the drawing.** Its
-`\HighlightText*` command already wraps across lines and accepts a
-background color through `bg=...`. Its richer interface includes TikZ
-styling and a separate command for highlighting formulas. For a short
-label that can stay on one line, `xcolor`’s `\colorbox` is sufficient.
-[highlightx documentation](https://ctan.org/pkg/highlightx) ·
-[xcolor documentation](https://ctan.org/pkg/xcolor)
+When you need a submission copy, switch to `\usepackage[off]{hlite}`.
+One preamble edit gives you a clean PDF and keeps your review marks
+in the source so you can turn them back on for the next revision.
 
 ## Get a highlight on the page
 
@@ -153,6 +145,17 @@ selection. [TeXstudio macro documentation](https://texstudio-org.github.io/advan
 
 If a selection still causes an error, a small `.tex` example and the first
 error in the log make it easier to reproduce.
+
+## How hlite uses highlightx
+
+`hlite` draws its backgrounds with `highlightx`’s `\HighlightText*`, which
+already wraps text and accepts a background color through `bg=...`.
+`hlite` adds per-selection color shorthand, support for common inline
+commands, and a document-wide off switch. The underlying `highlightx`
+interface exposes TikZ styling and a separate formula highlighting
+command. For a short label that fits on one line, `xcolor` provides `\colorbox`.
+[highlightx documentation](https://ctan.org/pkg/highlightx) ·
+[xcolor documentation](https://ctan.org/pkg/xcolor)
 
 ## Regression check
 
