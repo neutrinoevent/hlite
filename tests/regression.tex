@@ -1,0 +1,45 @@
+\documentclass{article}
+\usepackage{amsmath,natbib}
+\usepackage{hlite}
+\usepackage[hidelinks]{hyperref}
+\usepackage{cleveref}
+
+\begin{document}
+\section{Orbit study}\label{sec:orbit}
+\begin{figure}[h]
+  \centering
+  \rule{1cm}{0.4pt}
+  \caption{Sample orbit}\label{fig:orbit}
+\end{figure}
+\begin{equation}
+  \ell=1\label{eq:orbit}
+\end{equation}
+
+\noindent\begin{minipage}{2.5in}
+\hlight[blue!12]{The closure error \(D=4.45\times10^{-8}\) remains small,
+and the angular momentum $\ell=1$ holds for the full revolution.}
+\end{minipage}
+
+\hlite[green!15]{See Figure~\ref{fig:orbit}, Eq.~\eqref{eq:orbit}, and
+\emph{page~\pageref{fig:orbit}}.}
+\hlight{The label \ref*{fig:orbit} also matches \autoref{fig:orbit}.}
+
+\hlight{See \Cref{fig:orbit,eq:orbit} in \nameref{sec:orbit}.}
+
+\hlight{See \cite{one} and \cite[p.~15]{two}.}
+
+\hlight{The authors are \citet*{one}.}
+
+\hlight{Earlier work \citep[{see [appendix]}][{\emph{p.~15}}]{one,two}
+gave the same result.}
+
+\hlight{Read the \href{https://example.org/orbit}{project page}.}
+\hlight{For \textbf{the case \(v=1\)}, we use \texttt{solve\_ivp}.}
+
+\begin{thebibliography}{2}
+\bibitem[Smith et~al.(2020)Smith, Roe, and Doe]{one}
+Smith, Roe, and Doe. First work. 2020.
+\bibitem[Jones(2024)]{two}
+Jones. Second work. 2024.
+\end{thebibliography}
+\end{document}

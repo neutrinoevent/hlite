@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}[2020/10/01]
-\ProvidesPackage{hlite}[2026/11/25 v0.1 Simple colored highlights]
+\ProvidesPackage{hlite}[2026/11/26 v0.2 Simple colored highlights]
 
 \newif\ifhlite@enabled
 \hlite@enabledtrue
@@ -8,12 +8,67 @@
 
 \ifhlite@enabled
   \RequirePackage{highlightx}
+
+  % Let SOUL measure a whole inline command as it would an \mbox.
+  \newcommand{\hlite@box}[1]{\SOUL@addprotect\mbox{#1}}
+  \def\hlite@math#1#2\){\hlite@box{#1#2\)}}
+  \NewDocumentCommand{\hlite@reference}{m s m}{%
+    \IfBooleanTF{#2}{\hlite@box{#1*{#3}}}{\hlite@box{#1{#3}}}%
+  }
+  \NewDocumentCommand{\hlite@citation}{m s o o m}{%
+    \edef\hlite@next{\noexpand\hlite@box{%
+      \noexpand#1\IfBooleanT{#2}{*}%
+      \IfValueT{#3}{[{\unexpanded{#3}}]}%
+      \IfValueT{#4}{[{\unexpanded{#4}}]}%
+      {\unexpanded{#5}}%
+    }}%
+    \hlite@next
+  }
+  \NewDocumentCommand{\hlite@link}{m o m m}{%
+    \IfValueTF{#2}{\hlite@box{#1[{#2}]{#3}{#4}}}{\hlite@box{#1{#3}{#4}}}%
+  }
+
+  \newcommand*{\hlite@register}[2]{%
+    \expandafter\let\csname hlite@atom@\string#1\endcsname#2%
+  }
+  \hlite@register\(\hlite@math
+  \hlite@register\ref\hlite@reference
+  \hlite@register\pageref\hlite@reference
+  \hlite@register\eqref\hlite@reference
+  \hlite@register\autoref\hlite@reference
+  \hlite@register\nameref\hlite@reference
+  \hlite@register\cref\hlite@reference
+  \hlite@register\Cref\hlite@reference
+  \hlite@register\cite\hlite@citation
+  \hlite@register\citep\hlite@citation
+  \hlite@register\citet\hlite@citation
+  \hlite@register\parencite\hlite@citation
+  \hlite@register\textcite\hlite@citation
+  \hlite@register\autocite\hlite@citation
+  \hlite@register\href\hlite@link
+
+  \newcommand*{\hlite@atom}[1]{\csname hlite@atom@\string#1\endcsname{#1}}
+  \newcommand*{\hlite@token}[1]{%
+    \ifcsname hlite@atom@\string#1\endcsname
+      \expandafter\hlite@atom
+    \else
+      \expandafter\hlite@originaltoken
+    \fi
+    {#1}%
+  }
+
   \NewDocumentCommand{\hlight}{O{yellow!18} m}{%
-    \HighlightText*[bg=#1]{#2}%
+    \begingroup
+      % Adapt the scanner only while this selection is being built.
+      \let\hlite@originaltoken\SOUL@dotoken
+      \let\SOUL@dotoken\hlite@token
+      \HighlightText*[bg=#1]{#2}%
+    \endgroup
   }
 \else
   % A clean build typesets the original argument directly.
   \NewDocumentCommand{\hlight}{O{} m}{#2}
 \fi
+\newcommand{\hlite}{\hlight}
 
 \endinput

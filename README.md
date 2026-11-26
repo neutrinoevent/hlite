@@ -1,36 +1,114 @@
 # hlite
 
-Add a soft background to selected text in LaTeX. Choose the color for each
-selection and use one package option to produce a clean copy.
+Put a colored background behind a selection in LaTeX. Choose the color
+for each highlight and use one package option to prepare a clean copy.
 
 ## Install
 
-Put [hlite.sty](hlite.sty) beside the main LaTeX file. To use it across projects
-with TeX Live, put it under the personal TeX tree at
-`tex/latex/hlite/hlite.sty`. Run `kpsewhich -var-value=TEXMFHOME` to find
-that tree.
+Download the style file and put it next to your main `.tex` file. Replace
+the project’s existing copy when you update. [Download `hlite.sty`](hlite.sty)
 
-Enabled highlights use [highlightx](https://ctan.org/pkg/highlightx). If your
-TeX Live installation lacks it, install it with `tlmgr install highlightx`.
+To share one copy across TeX Live projects, place it at
+`tex/latex/hlite/hlite.sty` inside your personal TeX tree. Run
+`kpsewhich -var-value=TEXMFHOME` to find that tree. If you have multiple
+copies, run `kpsewhich hlite.sty` from the project directory to see which
+file TeX finds.
 
-## Use
+Highlighting uses [highlightx](https://ctan.org/pkg/highlightx), which
+`hlite` loads automatically. If it is missing, install it through your TeX
+distribution. On TeX Live the package command is `tlmgr install highlightx`.
+On a minimal TeX Live installation, an error that mentions `simplekv.sty`
+means the rendering dependency is missing. Install it with
+`tlmgr install simplekv` in the TeX Live installation your editor uses.
 
-    \documentclass{article}
-    \usepackage{hlite}
+## Quick start
 
-    \begin{document}
-    \hlight{This uses the default pale yellow.}
+```latex
+\documentclass{article}
+\usepackage{hlite}
 
-    \hlight[blue!12]{This selection can wrap across lines and include
-    inline math such as $D=4.45\times10^{-8}$.}
-    \end{document}
+\begin{document}
+\hlight{This uses the default pale yellow.}
 
-The optional argument accepts an xcolor name or mix. A selection can span several printed lines within a paragraph. With pdfLaTeX, compile twice to place the highlights. TeXstudio's
-usual pdfLaTeX build works.
+\hlight[blue!12]{The closure error \(D=4.45\times10^{-8}\) was small
+enough for the run. This selection can wrap across printed lines.}
+\end{document}
+```
 
-For a clean copy, load the package as follows.
+Compile with pdfLaTeX. Compile twice when you add or move highlights so
+the backgrounds line up with the text. TeXstudio's pdfLaTeX build uses the
+same package. `latexmk -pdf` can handle the extra passes automatically.
 
-    \usepackage[off]{hlite}
+Both `\hlight[blue!12]{text}` and `\hlite[blue!12]{text}` work. The optional
+argument takes an `xcolor` color name or mix. For instance, `blue!12` mixes
+12% blue with white. A named color works too.
 
-The off option typesets the contents of each selection directly. A clean
-build can run without highlightx installed.
+```latex
+% In the preamble, after \usepackage{hlite}
+\definecolor{reportgold}{HTML}{F8F0E0}
+
+% In the document body
+\hlight[reportgold]{The finer integration kept the orbit bound.}
+```
+
+## Math, references, and citations
+
+Both `$...$` and `\(...\)` work for inline math. References and citations
+can go inside the selection, including optional citation notes.
+
+```latex
+\hlight[blue!12]{See Fig.~\ref{fig:orbit} and Eq.~\eqref{eq:period}.}
+\hlight{The result agrees with the earlier study \cite[p.~15]{smith2020}.}
+```
+
+| Inside a highlight | Supported forms |
+| --- | --- |
+| Cross-references | `\ref`, `\pageref`, and `\eqref` |
+| Named and linked references | `\autoref`, `\nameref`, `\cref`, and `\Cref` |
+| Citations | `\cite`, natbib's `\citep` and `\citet`, and biblatex's `\parencite`, `\textcite`, and `\autocite` |
+| Links and formatting | `\href{url}{text}` and common commands such as `\emph` and `\textbf` |
+
+These commands use the reference and bibliography packages you load in
+your document. For example, `\eqref` comes from `amsmath`. Citations still
+need the usual BibTeX or Biber pass when your document uses one.
+
+Wrap one paragraph at a time and keep display equations outside the selection.
+A reference, citation, or link stays together inside a highlight. If a long
+citation or link causes an overfull line, place it between two highlights so
+LaTeX can break it normally.
+
+If a custom inline command causes a build error, try boxing that command
+and all its arguments.
+
+```latex
+\hlight{See \mbox{\myreference{orbit}} for the complete result.}
+```
+
+## Clean copy
+
+Load the package with the `off` option for the submission copy.
+
+```latex
+\usepackage[off]{hlite}
+```
+
+The marked content is typeset directly, with the same text, math, and links.
+This mode can run without `highlightx` installed.
+
+## TeXstudio shortcut
+
+In **Macros → Edit Macros**, add a **Normal** macro with the following content.
+
+```latex
+\hlight[blue!12]{%<text%>}
+```
+
+Assign a shortcut, select source text, and invoke the macro to wrap the
+selection. [TeXstudio macro documentation](https://texstudio-org.github.io/advanced.html#personal-macros)
+
+## Regression check
+
+Run `python3 tests/check.py` with pdfLaTeX and [PyMuPDF](https://pymupdf.readthedocs.io/)
+available. The check compiles [the fixture](tests/regression.tex) and verifies
+wrapped highlights, intact links and citation text, and an `off` build that
+renders like the unmarked fixture.
