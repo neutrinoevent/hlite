@@ -17,15 +17,15 @@ When you need a submission copy, switch to `\usepackage[off]{hlite}`.
 One preamble edit gives you a clean PDF and keeps your review marks
 in the source so you can turn them back on for the next revision.
 
-## Get a highlight on the page
+## Quick start
 
-1. Put `hlite.sty` next to the main `.tex` file. On GitHub, open the style
-   file and choose **Download raw file**. [Open `hlite.sty`](hlite.sty)
-2. Add `\usepackage{hlite}` to your preamble. It loads `highlightx`
-   automatically. If TeX Live reports that `highlightx.sty` is missing,
-   run `tlmgr install highlightx`.
-3. Compile this example with pdfLaTeX. Run it twice so the background
-   lands behind the text. `latexmk -pdf` can handle the extra pass.
+1. Open `hlite.sty` on GitHub and choose **Download raw file**.
+   [Open `hlite.sty`](hlite.sty)
+2. Save it next to your main `.tex` file. On Overleaf, upload it to the
+   project’s top-level folder alongside the main file. [Overleaf package files](https://docs.overleaf.com/managing-projects-and-files/adding-latex-dependencies)
+3. Try the example below as `demo.tex`. Use pdfLaTeX and compile twice to
+   position the backgrounds. If you build locally, `latexmk -pdf demo.tex`
+   handles the extra pass.
 
 ```latex
 \documentclass{article}
@@ -43,9 +43,59 @@ below our tolerance without changing the step size.}
 `\hlight` and `\hlite` are interchangeable. Omit the optional argument
 for pale yellow (`yellow!18`).
 
-To share one copy across TeX Live projects, put the style file at
-`tex/latex/hlite/hlite.sty` inside your personal TeX tree. Find that
-tree with `kpsewhich -var-value=TEXMFHOME`.
+For an existing report or manuscript, keep your document class, add
+`\usepackage{hlite}` before `\begin{document}`, and wrap a sentence in
+`\hlight{...}` in the body. For a shared project, keep the same copy
+of `hlite.sty` with the manuscript and record the TeX Live version used
+to build it.
+
+Tested on TeX Live 2026 with pdfLaTeX, LuaLaTeX, and XeLaTeX. The
+two-column APS REVTeX 4.2 check used pdfLaTeX. The citation checks
+covered natbib and biblatex with Biber.
+
+## Highlight math, references, and citations
+
+Use the same command for a finding that includes an inline equation,
+a figure reference, and a citation.
+
+```latex
+\hlight[blue!12]{For \(\ell=1\), Fig.~\ref{fig:orbit}
+agrees with the earlier result \cite{smith2020}.}
+```
+
+Use the key from your figure’s `\label{...}` in `\ref` and a key from
+your bibliography in `\cite`. Citation notes such as
+`\cite[p.~15]{smith2020}` also work.
+
+| Inside a highlight | Supported forms |
+| --- | --- |
+| Inline math | `$...$` and `\(...\)` |
+| Cross-references | `\ref` and `\pageref`, amsmath’s `\eqref`, hyperref’s `\autoref` and `\nameref`, and cleveref’s `\cref` and `\Cref` |
+| Citations | `\cite`, natbib’s `\citep` and `\citet`, and biblatex’s `\parencite`, `\textcite`, and `\autocite` |
+| Links and emphasis | hyperref’s `\href{url}{text}`, `\emph`, and `\textbf` |
+
+Load the packages that provide the commands you use, and run the usual
+BibTeX or Biber pass if your document calls for one. Existing PDF links
+remain clickable.
+
+**Where to split a highlight.** Keep each selection within one paragraph,
+page, and column. If it runs across a page or column break, use shorter
+selections on either side. Leave display equations between highlights.
+Inline math, references, citations, and links each stay together inside
+a highlight. If a long citation or link runs past the margin, put it
+between highlights so LaTeX can break it normally. Keep headings plain
+when they are used as PDF bookmarks.
+
+## Build a clean copy
+
+Replace `\usepackage{hlite}` with `\usepackage[off]{hlite}` and recompile.
+The PDF still prints everything inside the highlights, including any
+draft comments you typed there. Remove comments meant only for review.
+Check line and page breaks in the rebuilt PDF because LaTeX can lay out
+the marked text normally again.
+
+This mode can run without `highlightx`. Switch back to `\usepackage{hlite}`
+to show the backgrounds again.
 
 ## Choose a color
 
@@ -88,40 +138,6 @@ To use extra named colors such as `ForestGreen`, load
 loads `xcolor`. Use the spelling and capitalization from the color list.
 [xcolor named colors](https://tug.ctan.org/macros/latex2e/contrib/xcolor/xcolor.pdf#page=38)
 
-## Highlight math, references, and citations
-
-Use the same command when a selection includes inline math or a reference.
-For example, in a document with the labels and citation key defined, write
-
-```latex
-\hlight[blue!12]{See Fig.~\ref{fig:orbit} and Eq.~\eqref{eq:period}
-for the case \(\ell=1\).}
-\hlight{This agrees with the earlier study \cite[p.~15]{smith2020}.}
-```
-
-| Inside a highlight | Supported forms |
-| --- | --- |
-| Inline math | `$...$` and `\(...\)` |
-| Cross-references | `\ref` and `\pageref`, amsmath’s `\eqref`, hyperref’s `\autoref` and `\nameref`, and cleveref’s `\cref` and `\Cref` |
-| Citations | `\cite`, natbib’s `\citep` and `\citet`, and biblatex’s `\parencite`, `\textcite`, and `\autocite` |
-| Links and emphasis | hyperref’s `\href{url}{text}`, `\emph`, and `\textbf` |
-
-Load the packages that provide the commands you use, and run the usual
-BibTeX or Biber pass if your document calls for one. Existing PDF links
-remain clickable.
-
-Wrap one paragraph per highlight and leave display equations between
-highlights. Each inline formula, reference, citation, or link stays
-together. If a long citation or link runs past the margin, place it between
-two highlights so LaTeX can break it normally.
-
-## Build a clean copy
-
-Replace `\usepackage{hlite}` with `\usepackage[off]{hlite}`. All marked text,
-math, and links are typeset as ordinary content, and this mode can run
-without `highlightx`. Switch back to `\usepackage{hlite}` to show the
-backgrounds again.
-
 ## Work faster in TeXstudio
 
 In **Macros → Edit Macros**, add a **Normal** macro with this content.
@@ -139,12 +155,18 @@ selection. [TeXstudio macro documentation](https://texstudio-org.github.io/advan
 | --- | --- |
 | Text appears without a background | Check for `[off]` and run pdfLaTeX again after editing or moving a highlight. |
 | TeX finds an old copy | Run `kpsewhich hlite.sty` from the project directory. If the project has a local copy, update that file. |
+| `highlightx.sty` is missing | `hlite` loads it automatically when highlights are enabled. On local TeX Live, run `tlmgr install highlightx`. |
 | `simplekv.sty` is missing | Run `tlmgr install simplekv` in the TeX Live installation your editor uses. |
 | `Undefined color` | Check the name’s case, load the relevant `xcolor` palette, or define the color before using it. For HTML colors, define a name first and pass that name in brackets. |
 | A custom inline command fails | Try wrapping the entire command and its arguments in `\mbox{...}`, as in `\hlight{See \mbox{\myreference{orbit}} for details.}`. |
 
-If a selection still causes an error, a small `.tex` example and the first
-error in the log make it easier to reproduce.
+If a selection still causes an error, include a small `.tex` example,
+your compiler and TeX distribution, and the first error in the log.
+[Open an issue](https://github.com/neutrinoevent/hlite/issues/new)
+
+For a shared local installation, put `hlite.sty` in
+`tex/latex/hlite/hlite.sty` under the tree reported by
+`kpsewhich -var-value=TEXMFHOME`.
 
 ## How hlite uses highlightx
 
