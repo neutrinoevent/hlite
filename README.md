@@ -6,26 +6,31 @@ Alexander Nichols · Old Dominion University · [MIT License](LICENSE)
 
 Line-wrapping highlights for LaTeX drafts and reports.
 
-## Why use hlite?
+## Highlight findings in context
 
-Mark an entire finding, including the inline equation, figure reference,
-or citation that gives it context. Use `\hlight[color]{text}` to choose
-a color for each selection. As you revise the sentence, the background
-follows the text across line breaks.
+Mark a result together with the inline equation, figure reference, or
+citation that supports it. The background follows the text as it wraps.
+Use `\hlight[color]{text}` to give results one color and flag passages
+for a coauthor in another.
 
-When you need a submission copy, switch to `\usepackage[off]{hlite}`.
-One preamble edit gives you a clean PDF and keeps your review marks
-in the source so you can turn them back on for the next revision.
+For submission, one preamble edit removes the backgrounds while keeping
+the text in the PDF and the highlight commands in your source.
+[Build a PDF without highlights](#build-a-pdf-without-highlights)
 
 ## Quick start
 
-1. Open `hlite.sty` on GitHub and choose **Download raw file**.
+1. Open the style file on GitHub and choose **Download raw file**.
    [Open `hlite.sty`](hlite.sty)
 2. Save it next to your main `.tex` file. On Overleaf, upload it to the
    project’s top-level folder alongside the main file. [Overleaf package files](https://docs.overleaf.com/managing-projects-and-files/adding-latex-dependencies)
-3. Try the example below as `demo.tex`. Use pdfLaTeX and compile twice to
-   position the backgrounds. If you build locally, `latexmk -pdf demo.tex`
-   handles the extra pass.
+3. In an existing document, add `\usepackage{hlite}` before
+   `\begin{document}` and wrap a passage in `\hlight{...}` in the body.
+
+Compile twice to position the backgrounds. To try the example on its
+own, save it as `demo.tex` and use pdfLaTeX. A local
+`latexmk -pdf demo.tex` build handles the extra pass. When highlights
+are enabled, `hlite` loads `highlightx` automatically.
+[Help with missing packages](#troubleshooting)
 
 ```latex
 \documentclass{article}
@@ -40,32 +45,42 @@ below our tolerance without changing the step size.}
 \end{document}
 ```
 
-`\hlight` and `\hlite` are interchangeable. Omit the optional argument
-for pale yellow (`yellow!18`).
+`\hlight` and `\hlite` are interchangeable. Omit the color argument for
+pale yellow (`yellow!18`). A highlight can wrap across lines within a
+single paragraph, page, and column.
 
-For an existing report or manuscript, keep your document class, add
-`\usepackage{hlite}` before `\begin{document}`, and wrap a sentence in
-`\hlight{...}` in the body. For a shared project, keep the same copy
-of `hlite.sty` with the manuscript and record the TeX Live version used
-to build it.
+To use one copy across your local TeX Live projects, put `hlite.sty` in
+`tex/latex/hlite/hlite.sty` under the tree reported by
+`kpsewhich -var-value=TEXMFHOME`.
 
-Tested on TeX Live 2026 with pdfLaTeX, LuaLaTeX, and XeLaTeX. The
-two-column APS REVTeX 4.2 check used pdfLaTeX. The citation checks
-covered natbib and biblatex with Biber.
+## Build a PDF without highlights
+
+Replace `\usepackage{hlite}` with `\usepackage[off]{hlite}` and recompile.
+The PDF still prints everything inside each highlight, including any
+review-only prose. Remove that prose before sharing and check line and
+page breaks in the rebuilt PDF.
+
+If you share the `.tex` source, include the project’s copy of `hlite.sty`.
+The `off` option skips `highlightx`. Switch back to `\usepackage{hlite}`
+to restore the backgrounds.
 
 ## Highlight math, references, and citations
-
-Use the same command for a finding that includes an inline equation,
-a figure reference, and a citation.
 
 ```latex
 \hlight[blue!12]{For \(\ell=1\), Fig.~\ref{fig:orbit}
 agrees with the earlier result \cite{smith2020}.}
 ```
 
-Use the key from your figure’s `\label{...}` in `\ref` and a key from
-your bibliography in `\cite`. Citation notes such as
-`\cite[p.~15]{smith2020}` also work.
+Use your own figure and bibliography keys. Citation notes such as
+`\cite[p.~15]{smith2020}` also work. For a complete document with labels
+and bibliography entries, see [the compilable example](tests/regression.tex).
+
+**Where to split a highlight.** Use shorter selections on either side of
+a page or column break. Leave display equations between highlights, and
+leave headings plain when they are used as PDF bookmarks. Each inline
+formula, reference, citation, or link stays together inside a highlight.
+If a long citation or link runs past the margin, put it between highlights
+so LaTeX can break it normally.
 
 | Inside a highlight | Supported forms |
 | --- | --- |
@@ -78,24 +93,10 @@ Load the packages that provide the commands you use, and run the usual
 BibTeX or Biber pass if your document calls for one. Existing PDF links
 remain clickable.
 
-**Where to split a highlight.** Keep each selection within one paragraph,
-page, and column. If it runs across a page or column break, use shorter
-selections on either side. Leave display equations between highlights.
-Inline math, references, citations, and links each stay together inside
-a highlight. If a long citation or link runs past the margin, put it
-between highlights so LaTeX can break it normally. Keep headings plain
-when they are used as PDF bookmarks.
-
-## Build a clean copy
-
-Replace `\usepackage{hlite}` with `\usepackage[off]{hlite}` and recompile.
-The PDF still prints everything inside the highlights, including any
-draft comments you typed there. Remove comments meant only for review.
-Check line and page breaks in the rebuilt PDF because LaTeX can lay out
-the marked text normally again.
-
-This mode can run without `highlightx`. Switch back to `\usepackage{hlite}`
-to show the backgrounds again.
+**Tested setups.** On TeX Live 2026, the engine checks covered pdfLaTeX,
+LuaLaTeX, and XeLaTeX. The two-column APS REVTeX 4.2 check used pdfLaTeX.
+The citation checks covered natbib and, separately, biblatex with Biber.
+For shared builds, record the TeX Live version used for the manuscript.
 
 ## Choose a color
 
@@ -130,7 +131,7 @@ Load `xcolor` explicitly so the definitions also work with `[off]`.
 
 % In the document body
 \hlight[resultblue]{The two estimates agreed within uncertainty.}
-\hlite[reviewpeach]{Check the reported units before submission.}
+\hlite[reviewpeach]{All periods are reported in hours.}
 ```
 
 To use extra named colors such as `ForestGreen`, load
@@ -163,10 +164,6 @@ selection. [TeXstudio macro documentation](https://texstudio-org.github.io/advan
 If a selection still causes an error, include a small `.tex` example,
 your compiler and TeX distribution, and the first error in the log.
 [Open an issue](https://github.com/neutrinoevent/hlite/issues/new)
-
-For a shared local installation, put `hlite.sty` in
-`tex/latex/hlite/hlite.sty` under the tree reported by
-`kpsewhich -var-value=TEXMFHOME`.
 
 ## How hlite uses highlightx
 
