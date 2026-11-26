@@ -1,5 +1,7 @@
 # hlite
 
+Alexander Nichols · Old Dominion University · [MIT License](LICENSE)
+
 Put a colored background behind a selection in LaTeX. Choose the color
 for each highlight and use one package option to prepare a clean copy.
 
