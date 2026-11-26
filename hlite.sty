@@ -1,0 +1,19 @@
+\NeedsTeXFormat{LaTeX2e}[2020/10/01]
+\ProvidesPackage{hlite}[2026/11/25 v0.1 Simple colored highlights]
+
+\newif\ifhlite@enabled
+\hlite@enabledtrue
+\DeclareOption{off}{\hlite@enabledfalse}
+\ProcessOptions\relax
+
+\ifhlite@enabled
+  \RequirePackage{highlightx}
+  \NewDocumentCommand{\hlight}{O{yellow!18} m}{%
+    \HighlightText*[bg=#1]{#2}%
+  }
+\else
+  % A clean build typesets the original argument directly.
+  \NewDocumentCommand{\hlight}{O{} m}{#2}
+\fi
+
+\endinput
